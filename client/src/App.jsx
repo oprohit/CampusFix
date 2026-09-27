@@ -226,19 +226,22 @@ export default function App() {
         <div className="navbar-actions">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{
-              background: '#1e293b',
-              padding: '5px 12px',
-              borderRadius: '8px',
-              fontSize: '12px',
-              color: '#e2e8f0',
+              background: 'rgba(255, 255, 255, 0.08)',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              padding: '6px 14px',
+              borderRadius: '9999px',
+              fontSize: '12.5px',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
-              gap: '7px',
-              border: '1px solid var(--border-subtle)'
+              gap: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)'
             }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
               <span style={{ fontWeight: 600 }}>{currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}</span>
-              <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>({currentUser.user_metadata?.role || 'Student'})</span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '11px' }}>({currentUser.user_metadata?.role || 'Student'})</span>
             </div>
             <button
               onClick={async () => {
@@ -246,7 +249,7 @@ export default function App() {
                 setCurrentUser(null);
               }}
               className="btn btn-secondary"
-              style={{ padding: '6px 12px', gap: '6px' }}
+              style={{ padding: '7px 14px', gap: '6px', fontSize: '12.5px' }}
               title="Sign Out"
             >
               <LogOut size={13} />

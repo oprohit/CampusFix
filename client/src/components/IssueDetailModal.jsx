@@ -81,11 +81,11 @@ export default function IssueDetailModal({
           )}
 
           {/* Problem Description */}
-          <div style={{ background: '#0b1120', padding: '14px', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.06)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.14)' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.55)', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
               Problem Description
             </div>
-            <p style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '13.5px', color: '#f8fafc', lineHeight: 1.6 }}>
               {issue.description}
             </p>
           </div>

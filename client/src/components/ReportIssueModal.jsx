@@ -284,17 +284,17 @@ export default function ReportIssueModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '16px',
-                border: '1px dashed var(--border-subtle)',
-                borderRadius: '8px',
-                background: '#0b1120',
+                border: '1px dashed rgba(255, 255, 255, 0.22)',
+                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.06)',
                 cursor: 'pointer',
-                transition: 'border-color 0.15s'
+                transition: 'all 0.15s'
               }}>
-                <Camera size={20} style={{ color: 'var(--text-muted)', marginBottom: '4px' }} />
-                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                <Camera size={20} style={{ color: 'rgba(255, 255, 255, 0.6)', marginBottom: '4px' }} />
+                <span style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.85)', fontWeight: 600 }}>
                   {imageFile ? imageFile.name : 'Choose campus photo'}
                 </span>
-                <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PNG, JPG up to 10MB</span>
+                <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.45)' }}>PNG, JPG up to 10MB</span>
                 <input
                   type="file"
                   accept="image/*"
