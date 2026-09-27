@@ -54,6 +54,7 @@ export default function AuthScreen({ onAuthSuccess }) {
           email,
           password,
           options: {
+            emailRedirectTo: window.location.origin,
             data: {
               full_name: fullName.trim() || emailOrUser.trim(),
               username: emailOrUser.trim(),
