@@ -1,0 +1,32 @@
+# Node & Frontend
+node_modules/
+client/node_modules/
+client/dist/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Environment, Secrets & Local Credentials
+API/apis.md
+apis.md
+*.env
+.env*
+.DS_Store
+*.log
+.gemini/
+.vscode/
+
+# Local Agent Skills & Plugins
+.agents/
+
+# Vercel & Netlify
+.vercel/
+.netlify/

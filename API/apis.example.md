@@ -1,0 +1,9 @@
+GEMINI_API_KEY=your_gemini_api_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+SUPABASE_SECRET_KEY=your_supabase_secret_key
+Project_ID=your_project_id
+GITHUB_TOKEN=your_github_token
+FIGMA_TOKEN=your_figma_token
+NETLIFY_TOKEN=your_netlify_token
+VERCEL_TOKEN=your_vercel_token
