@@ -17,6 +17,7 @@ import CampusLeafletMap from './components/CampusLeafletMap';
 import IssueDetailModal from './components/IssueDetailModal';
 import ReportIssueModal from './components/ReportIssueModal';
 import AuthModal from './components/AuthModal';
+import AuthScreen from './components/AuthScreen';
 import { fetchLocations, fetchIssues, createIssue, updateIssueStatus, upvoteIssue } from './api';
 import { supabase } from './supabase';
 
@@ -44,6 +45,7 @@ export default function App() {
 
   // Auth State
   const [currentUser, setCurrentUser] = useState(null);
+  const [authChecking, setAuthChecking] = useState(true);
 
   // Load initial campus data
   useEffect(() => {
@@ -64,10 +66,14 @@ export default function App() {
     // Check existing Supabase session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) setCurrentUser(session.user);
+      setAuthChecking(false);
+    }).catch(() => {
+      setAuthChecking(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user || null);
+      setAuthChecking(false);
     });
 
     return () => subscription.unsubscribe();
@@ -156,6 +162,33 @@ export default function App() {
     { id: 'hazard', label: 'Hazard' }
   ];
 
+  // 1. Session verification loader
+  if (authChecking) {
+    return (
+      <div className="auth-viewport" style={{ justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', zIndex: 10, color: '#ffffff' }}>
+          <div style={{ 
+            width: 44, 
+            height: 44, 
+            border: '3px solid rgba(255,255,255,0.2)', 
+            borderTopColor: '#ffffff', 
+            borderRadius: '50%', 
+            animation: 'spin 0.8s linear infinite', 
+            margin: '0 auto 16px' 
+          }} />
+          <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.05em' }}>
+            Verifying CampusFixer Session...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Auth Gate: User must log in or register before accessing the campus dashboard
+  if (!currentUser) {
+    return <AuthScreen onAuthSuccess={(user) => setCurrentUser(user)} />;
+  }
+
   return (
     <div className="app-root">
       {/* Navbar */}
@@ -188,43 +221,35 @@ export default function App() {
 
         {/* Actions */}
         <div className="navbar-actions">
-          {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                background: '#1e293b',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '11px',
-                color: '#e2e8f0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                border: '1px solid var(--border-subtle)'
-              }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }}></span>
-                <span>{currentUser.email?.split('@')[0]}</span>
-              </div>
-              <button
-                onClick={() => {
-                  supabase.auth.signOut();
-                  setCurrentUser(null);
-                }}
-                className="btn btn-secondary"
-                style={{ padding: '6px 8px' }}
-                title="Sign Out"
-              >
-                <LogOut size={13} />
-              </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              background: '#1e293b',
+              padding: '5px 12px',
+              borderRadius: '8px',
+              fontSize: '12px',
+              color: '#e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+              border: '1px solid var(--border-subtle)'
+            }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', boxShadow: '0 0 8px #10b981' }}></span>
+              <span style={{ fontWeight: 600 }}>{currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0]}</span>
+              <span style={{ color: 'var(--text-muted)', fontSize: '10px' }}>({currentUser.user_metadata?.role || 'Student'})</span>
             </div>
-          ) : (
             <button
-              onClick={() => setIsAuthOpen(true)}
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setCurrentUser(null);
+              }}
               className="btn btn-secondary"
+              style={{ padding: '6px 12px', gap: '6px' }}
+              title="Sign Out"
             >
-              <Shield size={14} style={{ color: 'var(--brand-primary)' }} />
-              <span>Student Sign In</span>
+              <LogOut size={13} />
+              <span>Sign Out</span>
             </button>
-          )}
+          </div>
 
           <button
             onClick={() => setIsReportOpen(true)}
