@@ -19,12 +19,16 @@
       "dest": "/api/index.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "/web/dist/$1"
+      "src": "/assets/(.*)",
+      "dest": "/web/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(?:ico|png|jpg|jpeg|svg|webmanifest|js|css|json|txt))",
+      "dest": "/web/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/web/dist/index.html"
+      "dest": "/web/index.html"
     }
   ]
 }
