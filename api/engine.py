@@ -10,14 +10,29 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
-GEMINI_EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+def clean_env(val: str | None) -> str:
+    if not val:
+        return ""
+    return val.replace('\ufeff', '').replace('\u200b', '').strip().strip('\'"')
+
+GEMINI_API_KEY = clean_env(os.environ.get("GEMINI_API_KEY")) or None
+GEMINI_MODEL = clean_env(os.environ.get("GEMINI_MODEL")) or "gemini-flash-latest"
+GEMINI_EMBEDDING_MODEL = clean_env(os.environ.get("GEMINI_EMBEDDING_MODEL")) or "gemini-embedding-001"
+SUPABASE_URL = clean_env(os.environ.get("SUPABASE_URL")) or None
+SUPABASE_KEY = (
+    clean_env(os.environ.get("SUPABASE_SERVICE_ROLE_KEY")) or
+    clean_env(os.environ.get("SUPABASE_SECRET_KEY")) or
+    clean_env(os.environ.get("SUPABASE_KEY")) or
+    None
+)
 
 ai_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL else None
+supabase: Client = None
+if SUPABASE_URL and SUPABASE_KEY:
+    try:
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    except Exception as e:
+        print(f"Supabase client init error: {e}")
 
 class ExtractionResult(BaseModel):
     category: str
@@ -140,15 +155,22 @@ def retrieve_candidates(vector: list[float], limit: int = 20):
     if not supabase:
         return []
         
-    # We call the RPC `match_found_reports`
-    res = supabase.rpc('match_found_reports', {
-        'query_embedding': vector,
-        'match_threshold': 0.0,
-        'match_count': limit,
-        'time_limit': None
-    }).execute()
-    
-    return res.data if res.data else []
+    try:
+        res = supabase.rpc('match_found_reports', {
+            'query_embedding': vector,
+            'match_threshold': 0.0,
+            'match_count': limit,
+            'time_limit': None
+        }).execute()
+        return res.data if res.data else []
+    except Exception as e:
+        print(f"Supabase RPC match_found_reports error: {e}. Falling back to select query.")
+        try:
+            fallback_res = supabase.table('found_reports').select('*').limit(limit).execute()
+            return fallback_res.data if fallback_res.data else []
+        except Exception as e2:
+            print(f"Supabase fallback query error: {e2}")
+            return []
 
 def visual_rerank(lost_image_bytes: bytes, candidate_image_urls: list[str]) -> dict:
     """

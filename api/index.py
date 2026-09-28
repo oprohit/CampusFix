@@ -44,6 +44,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    print("GLOBAL EXCEPTION:\n", traceback.format_exc())
+    return JSONResponse(
+        status_code=500,
+        content={"error": str(exc), "detail": traceback.format_exc()}
+    )
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "service": "LostMate AI API"}
@@ -54,11 +65,15 @@ class TriageRequest(BaseModel):
 @app.post("/api/triage")
 def triage_lost_item(req: TriageRequest):
     """Simple endpoint to test extraction and matching without image."""
-    extracted, results = run_matching_engine(req.text, None)
-    return {
-        "extracted": extracted.dict(),
-        "matches": results
-    }
+    try:
+        extracted, results = run_matching_engine(req.text, None)
+        return {
+            "extracted": extracted.dict(),
+            "matches": results
+        }
+    except Exception as e:
+        print(f"triage error: {traceback.format_exc()}")
+        return {"extracted": {"category": "other", "short_description": req.text}, "matches": []}
 
 @app.post("/api/chat")
 async def chat_endpoint(
@@ -67,13 +82,25 @@ async def chat_endpoint(
     image: Optional[UploadFile] = File(None)
 ):
     """Main chat endpoint. Processes multipart form data, logs lost report, and tracks matches."""
-    from engine import supabase, build_embedding_text, generate_embedding
+    from engine import supabase, build_embedding_text, generate_embedding, ExtractionResult
     
     image_bytes = None
     if image:
-        image_bytes = await image.read()
+        try:
+            image_bytes = await image.read()
+        except Exception:
+            pass
         
-    extracted, results = run_matching_engine(message, image_bytes)
+    try:
+        extracted, results = run_matching_engine(message, image_bytes)
+    except Exception as e:
+        print(f"run_matching_engine failed: {traceback.format_exc()}")
+        extracted = ExtractionResult(
+            category="other", colors=[], brand="Unknown", material="Unknown",
+            distinguishing_features="", short_description=message[:50],
+            normalized_location="Unknown", estimated_time="Unknown"
+        )
+        results = []
     
     # Save to lost_reports in Supabase
     lost_record_id = None
