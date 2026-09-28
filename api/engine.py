@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
-GEMINI_EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "text-embedding-004")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+GEMINI_EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "gemini-embedding-001")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 
@@ -61,62 +61,54 @@ def extract_details(text: str, image_bytes: bytes = None) -> ExtractionResult:
             types.Part.from_bytes(data=image_bytes, mime_type='image/jpeg')
         )
         
-    import time
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            response = ai_client.models.generate_content(
-                model=GEMINI_MODEL,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
-                )
+    try:
+        response = ai_client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=contents,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json"
             )
-            import re
-            # Clean potential markdown wrapping
-            raw_text = response.text.strip()
-            if raw_text.startswith('```'):
-                raw_text = re.sub(r'^```json\s*', '', raw_text)
-                raw_text = re.sub(r'\s*```$', '', raw_text)
-                
-            data = json.loads(raw_text)
-            return ExtractionResult(**data)
-        except Exception as e:
-            print(f"Gemini generation error (attempt {attempt+1}): {e}")
-            if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
-            else:
-                # Basic keyword fallback logic if all retries fail
-                lower_text = text.lower()
-                guessed_category = "other"
-                categories = {
-                    "phone": ["phone", "iphone", "samsung", "android"],
-                    "laptop": ["laptop", "macbook", "computer", "thinkpad", "dell"],
-                    "headphones": ["headphones", "airpods", "earbuds", "headset"],
-                    "wallet": ["wallet", "purse"],
-                    "keys": ["keys", "keychain"],
-                    "id_card": ["id", "id_card", "card", "license"],
-                    "backpack": ["backpack", "bag"],
-                    "bottle": ["bottle", "flask", "hydroflask"],
-                    "umbrella": ["umbrella"],
-                    "watch": ["watch", "apple watch", "rolex"]
-                }
-                for cat, synonyms in categories.items():
-                    if any(syn in lower_text for syn in synonyms):
-                        guessed_category = cat
-                        break
-                
-                # Guess colors
-                colors = []
-                for c in ["grey", "red", "black", "blue", "white", "silver", "gold"]:
-                    if c in lower_text:
-                        colors.append(c)
+        )
+        import re
+        raw_text = response.text.strip()
+        if raw_text.startswith('```'):
+            raw_text = re.sub(r'^```json\s*', '', raw_text)
+            raw_text = re.sub(r'\s*```$', '', raw_text)
+            
+        data = json.loads(raw_text)
+        return ExtractionResult(**data)
+    except Exception as e:
+        print(f"Gemini generation error: {e}. Falling back to instant rule-based extraction.")
+        lower_text = text.lower()
+        guessed_category = "other"
+        categories = {
+            "phone": ["phone", "iphone", "samsung", "android"],
+            "laptop": ["laptop", "macbook", "computer", "thinkpad", "dell"],
+            "headphones": ["headphones", "airpods", "earbuds", "headset"],
+            "wallet": ["wallet", "purse"],
+            "keys": ["keys", "keychain"],
+            "id_card": ["id", "id_card", "card", "license"],
+            "backpack": ["backpack", "bag"],
+            "bottle": ["bottle", "flask", "hydroflask"],
+            "umbrella": ["umbrella"],
+            "watch": ["watch", "apple watch", "rolex"]
+        }
+        for cat, synonyms in categories.items():
+            if any(syn in lower_text for syn in synonyms):
+                guessed_category = cat
+                break
+        
+        # Guess colors
+        colors = []
+        for c in ["grey", "red", "black", "blue", "white", "silver", "gold"]:
+            if c in lower_text:
+                colors.append(c)
 
-                return ExtractionResult(
-                    category=guessed_category, colors=colors, brand="Unknown", material="Unknown",
-                    distinguishing_features="", short_description=text[:50],
-                    normalized_location="Unknown", estimated_time="Unknown"
-                )
+        return ExtractionResult(
+            category=guessed_category, colors=colors, brand="Unknown", material="Unknown",
+            distinguishing_features="", short_description=text[:50],
+            normalized_location="Unknown", estimated_time="Unknown"
+        )
 
 def generate_embedding(text: str) -> list[float]:
     """Generates a 768-dimensional embedding."""

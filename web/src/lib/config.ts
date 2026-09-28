@@ -2,11 +2,12 @@
  * Safe API URL resolver with strict production validation
  */
 export const getApiUrl = (): string => {
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const raw = import.meta.env.VITE_API_URL;
+  const apiUrl = raw ? raw.replace(/^\ufeff/, '').replace(/[^\x20-\x7E]/g, '').trim() : '';
   const isProd = import.meta.env.PROD;
 
   if (isProd) {
-    if (!apiUrl || !apiUrl.trim()) {
+    if (!apiUrl) {
       throw new Error(
         'Production configuration error: VITE_API_URL is missing. In production builds, a valid remote API URL must be configured.'
       );
@@ -19,5 +20,5 @@ export const getApiUrl = (): string => {
     }
   }
 
-  return apiUrl?.trim() || 'http://localhost:8000';
+  return apiUrl || 'http://localhost:8000';
 };
