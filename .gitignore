@@ -1,33 +1,14 @@
-# Node & Frontend
-node_modules/
-client/node_modules/
-client/dist/
-dist/
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-env/
-venv/
-.venv/
-
-# Environment, Secrets & Local Credentials
-API/apis.md
-apis.md
-*.env
-.env*
-.DS_Store
-*.log
-.gemini/
-.vscode/
-
-# Local Agent Skills & Plugins
+.env
+.env.*
+!.env.example
+!.env.production.example
 .agents/
-
-# Vercel & Netlify
+.backup/
+node_modules/
+__pycache__/
+api/apis.md
+api/apis.example.md
+dist/
+build/
 .vercel/
-.netlify/
-forwarder_3000.py
+
