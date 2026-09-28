@@ -181,9 +181,16 @@ def score_match(candidate, extracted: ExtractionResult, has_image: bool) -> floa
         
     # 3. Description (Base 20, up to 60 if no image)
     desc_weight = 60 if not has_image else 20
-    sim = float(candidate.get('similarity', 0)) # similarity from pgvector (0 to 1)
-    # let's assume a sim of >0.5 is good.
-    desc_score = max(0, min(desc_weight, sim * desc_weight))
+    import math
+    try:
+        raw_sim = candidate.get('similarity', 0)
+        sim = float(raw_sim) if raw_sim is not None else 0.0
+        if math.isnan(sim) or math.isinf(sim):
+            sim = 0.0
+    except (ValueError, TypeError):
+        sim = 0.0
+
+    desc_score = max(0.0, min(float(desc_weight), sim * desc_weight))
     score += desc_score
     
     # 4. Location & Time are simplified for this demo
@@ -193,6 +200,7 @@ def score_match(candidate, extracted: ExtractionResult, has_image: bool) -> floa
     return score
 
 def run_matching_engine(text: str, image_bytes: bytes = None):
+    import math
     # 1. Extract
     extracted = extract_details(text, image_bytes)
     
@@ -207,8 +215,16 @@ def run_matching_engine(text: str, image_bytes: bytes = None):
     results = []
     has_image = bool(image_bytes)
     for c in candidates:
+        for k, v in list(c.items()):
+            try:
+                if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                    c[k] = 0.0
+                elif str(v).lower() == 'nan':
+                    c[k] = 0.0
+            except Exception:
+                pass
         base_score = score_match(c, extracted, has_image)
-        c['score'] = base_score
+        c['score'] = round(float(base_score), 1)
         c['explanation'] = "Matches basic criteria."
         results.append(c)
         
