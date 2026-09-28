@@ -12,3 +12,6 @@ dist/
 build/
 .vercel/
 
+
+.vercel
+.env*
