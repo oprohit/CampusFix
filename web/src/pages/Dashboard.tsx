@@ -194,11 +194,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-textMain flex flex-col">
-      {/* Navbar */}
+    <div className="app-shell bg-background text-textMain">
+      {/* Top Navbar pinned to safe area */}
       <nav 
-        className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-10"
-        style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
+        className="border-b border-border bg-background/90 backdrop-blur-md shrink-0 z-20"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -232,353 +232,487 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Single Scroll Area */}
       <main 
-        className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        className="main-scroll-area w-full"
         style={{
           paddingBottom: isNative 
-            ? 'calc(56px + env(safe-area-inset-bottom, 0px) + 2rem)' 
-            : 'max(env(safe-area-inset-bottom, 0px), 2rem)'
+            ? 'calc(64px + env(safe-area-inset-bottom, 0px) + 24px)' 
+            : 'calc(env(safe-area-inset-bottom, 0px) + 2.5rem)'
         }}
       >
-        
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Staff Dashboard</h1>
-            <p className="text-textMuted text-sm mt-1">Manage reported items and verify matches.</p>
-          </div>
-          
-          <button 
-            onClick={() => setIsLogModalOpen(true)}
-            className="bg-accent hover:bg-accent/90 text-white px-4 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)] flex items-center gap-2 w-full sm:w-auto justify-center"
-          >
-            <Plus size={18} />
-            Log Found Item
-          </button>
-        </div>
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-              <Package size={24} />
-            </div>
+        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Header Section */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <div className="text-2xl font-bold text-white">{stats.active}</div>
-              <div className="text-sm text-textMuted">Active Items</div>
+              <h1 className="text-2xl font-bold text-white">Staff Dashboard</h1>
+              <p className="text-textMuted text-sm mt-1">Manage reported items and verify matches.</p>
             </div>
-          </div>
-          
-          <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
-              <Clock size={24} />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-white">{stats.matches}</div>
-              <div className="text-sm text-textMuted">Pending Claims</div>
-            </div>
-          </div>
-          
-          <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
-              <CheckCircle size={24} />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-white">{stats.claimed}</div>
-              <div className="text-sm text-textMuted">Resolved</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs & Filters */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex bg-surface border border-border rounded-xl p-1 w-full sm:w-auto">
+            
             <button 
-              onClick={() => setActiveTab('found')}
-              className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'found' ? 'bg-background shadow-sm text-white' : 'text-textMuted hover:text-white'}`}
+              onClick={() => setIsLogModalOpen(true)}
+              className="bg-accent hover:bg-accent/90 text-white px-4 py-2.5 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)] flex items-center gap-2 w-full sm:w-auto justify-center tap-target-44"
             >
-              Recent Found Items
-            </button>
-            <button 
-              onClick={() => setActiveTab('matches')}
-              className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === 'matches' ? 'bg-background shadow-sm text-white' : 'text-textMuted hover:text-white'}`}
-            >
-              Match Alerts {stats.matches > 0 && <span className="ml-1.5 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded-full">{stats.matches}</span>}
+              <Plus size={18} />
+              Log Found Item
             </button>
           </div>
-          
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <div className="relative flex-1 sm:w-64">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-textMuted">
-                <Search size={16} />
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                <Package size={24} />
               </div>
-              <input 
-                type="text" 
-                className="w-full bg-surface border border-border rounded-xl py-2 pl-9 pr-4 text-white focus:outline-none focus:border-accent/50 text-sm placeholder:text-textMuted"
-                placeholder="Search items..."
-              />
+              <div>
+                <div className="text-2xl font-bold text-white">{stats.active}</div>
+                <div className="text-sm text-textMuted">Active Items</div>
+              </div>
             </div>
-            <button className="p-2 bg-surface border border-border rounded-xl text-textMuted hover:text-white transition-colors">
-              <Filter size={18} />
-            </button>
+            
+            <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                <Clock size={24} />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{stats.matches}</div>
+                <div className="text-sm text-textMuted">Pending Claims</div>
+              </div>
+            </div>
+            
+            <div className="bg-surface border border-border rounded-2xl p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-green-500/10 text-green-500 flex items-center justify-center">
+                <CheckCircle size={24} />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{stats.claimed}</div>
+                <div className="text-sm text-textMuted">Resolved</div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Content Area */}
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-textMuted">
-            <div className="animate-spin mb-4"><Loader2 size={32} /></div>
-            <p>Loading data...</p>
+          {/* Tabs & Filters */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex bg-surface border border-border rounded-xl p-1 w-full sm:w-auto">
+              <button 
+                onClick={() => setActiveTab('found')}
+                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-medium transition-all tap-target-44 ${activeTab === 'found' ? 'bg-background shadow-sm text-white' : 'text-textMuted hover:text-white'}`}
+              >
+                Recent Found Items
+              </button>
+              <button 
+                onClick={() => setActiveTab('matches')}
+                className={`flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-sm font-medium transition-all tap-target-44 ${activeTab === 'matches' ? 'bg-background shadow-sm text-white' : 'text-textMuted hover:text-white'}`}
+              >
+                Match Alerts {stats.matches > 0 && <span className="ml-1.5 bg-accent text-white text-[10px] px-1.5 py-0.5 rounded-full">{stats.matches}</span>}
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-1 sm:w-64">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-textMuted">
+                  <Search size={16} />
+                </div>
+                <input 
+                  type="text" 
+                  className="w-full bg-surface border border-border rounded-xl py-2 pl-9 pr-4 text-white focus:outline-none focus:border-accent/50 text-sm placeholder:text-textMuted min-h-[44px]"
+                  placeholder="Search items..."
+                />
+              </div>
+              <button className="p-2.5 bg-surface border border-border rounded-xl text-textMuted hover:text-white transition-colors tap-target-44 flex items-center justify-center">
+                <Filter size={18} />
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="bg-surface border border-border rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto">
+
+          {/* Content Area */}
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 text-textMuted">
+              <div className="animate-spin mb-4"><Loader2 size={32} /></div>
+              <p>Loading data...</p>
+            </div>
+          ) : (
+            <div className="bg-surface border border-border rounded-2xl overflow-hidden">
               {activeTab === 'found' ? (
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-textMuted uppercase bg-background/50 border-b border-border">
-                    <tr>
-                      <th className="px-6 py-4 font-medium">Item</th>
-                      <th className="px-6 py-4 font-medium">Category</th>
-                      <th className="px-6 py-4 font-medium">Location</th>
-                      <th className="px-6 py-4 font-medium">Status</th>
-                      <th className="px-6 py-4 font-medium text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
+                <>
+                  {/* Mobile Stacked Card View (< 768px) */}
+                  <div className="md:hidden divide-y divide-border">
                     {items.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-textMuted">
-                          No items found in the database.
-                        </td>
-                      </tr>
+                      <div className="p-8 text-center text-textMuted text-sm">
+                        No items found in the database.
+                      </div>
                     ) : (
                       items.map((item) => (
-                        <tr key={item.id} className="hover:bg-white/5 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-lg bg-background border border-border overflow-hidden shrink-0">
-                                {item.image_path ? (
-                                  <img src={getImageUrl(item.image_path)} alt={item.title} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-textMuted">
-                                    <Package size={16} />
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <div className="font-medium text-white">{item.title}</div>
-                                <div className="text-xs text-textMuted">{new Date(item.found_at).toLocaleDateString()}</div>
+                        <div key={item.id} className="p-4 flex flex-col gap-3">
+                          <div className="flex items-start gap-3">
+                            <div className="w-14 h-14 rounded-xl bg-background border border-border overflow-hidden shrink-0 relative flex items-center justify-center">
+                              {item.image_path ? (
+                                <img 
+                                  src={getImageUrl(item.image_path)} 
+                                  alt={item.title} 
+                                  className="w-full h-full object-cover" 
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback');
+                                    if (fallback) fallback.classList.remove('hidden');
+                                  }}
+                                />
+                              ) : null}
+                              <div className={`img-fallback w-full h-full flex items-center justify-center text-textMuted ${item.image_path ? 'hidden' : ''}`}>
+                                <Package size={20} />
                               </div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="inline-flex items-center px-2 py-1 rounded-md bg-background border border-border text-xs text-textMuted capitalize">
-                              {item.category}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-textMuted truncate max-w-[150px]">
-                            {item.location_text}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${item.status === 'claimed' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'claimed' ? 'bg-green-400' : 'bg-blue-400'}`}></span>
-                              {item.status || 'Available'}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button 
-                              onClick={() => setSelectedItem(item)}
-                              className="text-accent hover:text-white text-sm font-medium transition-colors"
-                            >
-                              View Details
-                            </button>
-                          </td>
-                        </tr>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <h3 className="font-semibold text-white text-sm truncate">{item.title}</h3>
+                                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${item.status === 'claimed' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'claimed' ? 'bg-green-400' : 'bg-blue-400'}`}></span>
+                                  {item.status || 'Available'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-textMuted">
+                                <span className="capitalize">{item.category}</span>
+                                <span>•</span>
+                                <span className="truncate">{item.location_text || 'Campus'}</span>
+                              </div>
+                              <div className="text-[11px] text-textMuted/70 mt-0.5">
+                                {new Date(item.found_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => setSelectedItem(item)}
+                            className="w-full py-2 bg-background hover:bg-white/5 border border-border text-accent text-xs font-semibold rounded-xl transition-colors flex items-center justify-center tap-target-44"
+                          >
+                            View Details
+                          </button>
+                        </div>
                       ))
                     )}
-                  </tbody>
-                </table>
+                  </div>
+
+                  {/* Desktop Table View (>= 768px) */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                      <thead className="text-xs text-textMuted uppercase bg-background/50 border-b border-border">
+                        <tr>
+                          <th className="px-6 py-4 font-medium">Item</th>
+                          <th className="px-6 py-4 font-medium">Category</th>
+                          <th className="px-6 py-4 font-medium">Location</th>
+                          <th className="px-6 py-4 font-medium">Status</th>
+                          <th className="px-6 py-4 font-medium text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {items.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-6 py-8 text-center text-textMuted">
+                              No items found in the database.
+                            </td>
+                          </tr>
+                        ) : (
+                          items.map((item) => (
+                            <tr key={item.id} className="hover:bg-white/5 transition-colors">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-lg bg-background border border-border overflow-hidden shrink-0 relative flex items-center justify-center">
+                                    {item.image_path ? (
+                                      <img 
+                                        src={getImageUrl(item.image_path)} 
+                                        alt={item.title} 
+                                        className="w-full h-full object-cover" 
+                                        onError={(e) => {
+                                          e.currentTarget.style.display = 'none';
+                                          const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback');
+                                          if (fallback) fallback.classList.remove('hidden');
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div className={`img-fallback w-full h-full flex items-center justify-center text-textMuted ${item.image_path ? 'hidden' : ''}`}>
+                                      <Package size={16} />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="font-medium text-white">{item.title}</div>
+                                    <div className="text-xs text-textMuted">{new Date(item.found_at).toLocaleDateString()}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className="inline-flex items-center px-2 py-1 rounded-md bg-background border border-border text-xs text-textMuted capitalize">
+                                  {item.category}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-textMuted truncate max-w-[150px]">
+                                {item.location_text}
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${item.status === 'claimed' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full ${item.status === 'claimed' ? 'bg-green-400' : 'bg-blue-400'}`}></span>
+                                  {item.status || 'Available'}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button 
+                                  onClick={() => setSelectedItem(item)}
+                                  className="text-accent hover:text-white text-sm font-medium transition-colors tap-target-44 inline-flex items-center"
+                                >
+                                  View Details
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               ) : (
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-textMuted uppercase bg-background/50 border-b border-border">
-                    <tr>
-                      <th className="px-6 py-4 font-medium">Match Details</th>
-                      <th className="px-6 py-4 font-medium">Lost Item</th>
-                      <th className="px-6 py-4 font-medium">Found Item</th>
-                      <th className="px-6 py-4 font-medium">Score</th>
-                      <th className="px-6 py-4 font-medium text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
+                <>
+                  {/* Mobile Stacked Match Cards (< 768px) */}
+                  <div className="md:hidden divide-y divide-border">
                     {matches.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-textMuted">
-                          No pending matches to review.
-                        </td>
-                      </tr>
+                      <div className="p-8 text-center text-textMuted text-sm">
+                        No pending matches to review.
+                      </div>
                     ) : (
                       matches.map((match) => (
-                        <tr key={match.id} className="hover:bg-white/5 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="font-medium text-white">Suggested Match</div>
-                            <div className="text-xs text-textMuted mt-1 max-w-[200px] truncate">{match.explanation}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="font-medium text-white">{match.lost_reports?.title}</div>
-                            <div className="text-xs text-textMuted capitalize">{match.lost_reports?.category}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              {match.found_reports?.image_path && (
-                                <div className="w-6 h-6 rounded bg-background border border-border overflow-hidden shrink-0">
-                                  <img src={getImageUrl(match.found_reports.image_path)} alt="" className="w-full h-full object-cover" />
-                                </div>
-                              )}
-                              <div>
-                                <div className="font-medium text-white">{match.found_reports?.title}</div>
-                                <div className="text-xs text-textMuted capitalize">{match.found_reports?.category}</div>
-                              </div>
+                        <div key={match.id} className="p-4 flex flex-col gap-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-semibold text-white">Suggested Match</span>
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                              {Math.round(match.score)}% Match
+                            </span>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-2 text-xs bg-background/60 p-3 rounded-xl border border-border">
+                            <div>
+                              <div className="text-[10px] text-textMuted uppercase font-semibold mb-0.5">Lost Item</div>
+                              <div className="font-medium text-white truncate">{match.lost_reports?.title}</div>
+                              <div className="text-textMuted capitalize">{match.lost_reports?.category}</div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="inline-flex items-center px-2 py-1 rounded bg-green-500/10 text-green-400 font-medium">
-                              {Math.round(match.score)}%
+                            <div>
+                              <div className="text-[10px] text-textMuted uppercase font-semibold mb-0.5">Found Item</div>
+                              <div className="font-medium text-white truncate">{match.found_reports?.title}</div>
+                              <div className="text-textMuted capitalize">{match.found_reports?.category}</div>
                             </div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <button className="text-accent hover:text-white text-sm font-medium transition-colors">
-                              Review
-                            </button>
-                          </td>
-                        </tr>
+                          </div>
+
+                          {match.explanation && (
+                            <p className="text-xs text-textMuted italic">{match.explanation}</p>
+                          )}
+
+                          <button 
+                            onClick={() => setSelectedItem(match.found_reports)}
+                            className="w-full py-2 bg-accent/10 hover:bg-accent/20 border border-accent/30 text-accent text-xs font-semibold rounded-xl transition-colors tap-target-44 flex items-center justify-center"
+                          >
+                            Review Match Details
+                          </button>
+                        </div>
                       ))
                     )}
-                  </tbody>
-                </table>
+                  </div>
+
+                  {/* Desktop Match Table (>= 768px) */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                      <thead className="text-xs text-textMuted uppercase bg-background/50 border-b border-border">
+                        <tr>
+                          <th className="px-6 py-4 font-medium">Match Details</th>
+                          <th className="px-6 py-4 font-medium">Lost Item</th>
+                          <th className="px-6 py-4 font-medium">Found Item</th>
+                          <th className="px-6 py-4 font-medium">Score</th>
+                          <th className="px-6 py-4 font-medium text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {matches.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-6 py-8 text-center text-textMuted">
+                              No pending matches to review.
+                            </td>
+                          </tr>
+                        ) : (
+                          matches.map((match) => (
+                            <tr key={match.id} className="hover:bg-white/5 transition-colors">
+                              <td className="px-6 py-4">
+                                <div className="font-medium text-white">Suggested Match</div>
+                                <div className="text-xs text-textMuted mt-1 max-w-[200px] truncate">{match.explanation}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="font-medium text-white">{match.lost_reports?.title}</div>
+                                <div className="text-xs text-textMuted capitalize">{match.lost_reports?.category}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-2">
+                                  {match.found_reports?.image_path && (
+                                    <div className="w-8 h-8 rounded bg-background border border-border overflow-hidden shrink-0 relative flex items-center justify-center">
+                                      <img 
+                                        src={getImageUrl(match.found_reports.image_path)} 
+                                        alt="" 
+                                        className="w-full h-full object-cover" 
+                                        onError={(e) => {
+                                          e.currentTarget.style.display = 'none';
+                                          const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback');
+                                          if (fallback) fallback.classList.remove('hidden');
+                                        }}
+                                      />
+                                      <div className="img-fallback hidden w-full h-full flex items-center justify-center text-textMuted">
+                                        <Package size={14} />
+                                      </div>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="font-medium text-white">{match.found_reports?.title}</div>
+                                    <div className="text-xs text-textMuted capitalize">{match.found_reports?.category}</div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="inline-flex items-center px-2 py-1 rounded bg-green-500/10 text-green-400 font-medium">
+                                  {Math.round(match.score)}%
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button 
+                                  onClick={() => setSelectedItem(match.found_reports)}
+                                  className="text-accent hover:text-white text-sm font-medium transition-colors tap-target-44"
+                                >
+                                  Review
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
 
-      {/* Log Found Item Modal */}
+      {/* Log Found Item Modal - with internal 90dvh scrolling & reachable submit button */}
       {isLogModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl shadow-2xl relative my-auto">
-            <div className="flex items-center justify-between p-6 border-b border-border">
-              <h2 className="text-xl font-bold text-white">Log Found Item</h2>
-              <button onClick={() => setIsLogModalOpen(false)} className="text-textMuted hover:text-white transition-colors">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-hidden animate-in fade-in">
+          <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl shadow-2xl relative my-auto max-h-[90dvh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-border shrink-0">
+              <h2 className="text-lg font-bold text-white">Log Found Item</h2>
+              <button onClick={() => setIsLogModalOpen(false)} className="tap-target-44 flex items-center justify-center text-textMuted hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={submitFoundItem} className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Item Title</label>
-                    <input 
-                      required
-                      type="text" 
-                      className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm"
-                      placeholder="e.g. Black Dell Laptop"
-                      value={formData.title}
-                      onChange={e => setFormData({...formData, title: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Category</label>
-                    <select 
-                      className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm appearance-none"
-                      value={formData.category}
-                      onChange={e => setFormData({...formData, category: e.target.value})}
-                    >
-                      <option value="phone">Phone</option>
-                      <option value="laptop">Laptop / Tablet</option>
-                      <option value="headphones">Headphones</option>
-                      <option value="wallet">Wallet</option>
-                      <option value="keys">Keys</option>
-                      <option value="id_card">ID / Card</option>
-                      <option value="backpack">Bag / Backpack</option>
-                      <option value="bottle">Water Bottle</option>
-                      <option value="umbrella">Umbrella</option>
-                      <option value="watch">Watch</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Found Location</label>
-                    <input 
-                      required
-                      type="text" 
-                      className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm"
-                      placeholder="e.g. Library 2nd Floor"
-                      value={formData.location_text}
-                      onChange={e => setFormData({...formData, location_text: e.target.value})}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Holding Location</label>
-                    <input 
-                      required
-                      type="text" 
-                      className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm"
-                      placeholder="e.g. Main Help Desk"
-                      value={formData.holding_location}
-                      onChange={e => setFormData({...formData, holding_location: e.target.value})}
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Photo (Max 5MB)</label>
-                    <div 
-                      className="border-2 border-dashed border-border rounded-xl h-[130px] flex flex-col items-center justify-center bg-background cursor-pointer hover:border-accent/50 transition-colors relative overflow-hidden"
-                      onClick={handleAttachPhoto}
-                    >
-                      {imagePreview ? (
-                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                      ) : (
-                        <>
-                          <Upload size={24} className="text-textMuted mb-2" />
-                          <span className="text-sm text-textMuted font-medium">{isNative ? 'Take Photo or Choose Gallery' : 'Click to upload image'}</span>
-                        </>
-                      )}
+            <form onSubmit={submitFoundItem} className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Item Title</label>
                       <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        className="hidden" 
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={handleWebImageChange}
+                        required
+                        type="text" 
+                        className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm min-h-[44px]"
+                        placeholder="e.g. Black Dell Laptop"
+                        value={formData.title}
+                        onChange={e => setFormData({...formData, title: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Category</label>
+                      <select 
+                        className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm min-h-[44px]"
+                        value={formData.category}
+                        onChange={e => setFormData({...formData, category: e.target.value})}
+                      >
+                        <option value="phone">Phone</option>
+                        <option value="laptop">Laptop / Tablet</option>
+                        <option value="headphones">Headphones</option>
+                        <option value="wallet">Wallet</option>
+                        <option value="keys">Keys</option>
+                        <option value="id_card">ID / Card</option>
+                        <option value="backpack">Bag / Backpack</option>
+                        <option value="bottle">Water Bottle</option>
+                        <option value="umbrella">Umbrella</option>
+                        <option value="watch">Watch</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Found Location</label>
+                      <input 
+                        required
+                        type="text" 
+                        className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm min-h-[44px]"
+                        placeholder="e.g. Library 2nd Floor"
+                        value={formData.location_text}
+                        onChange={e => setFormData({...formData, location_text: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Holding Location</label>
+                      <input 
+                        required
+                        type="text" 
+                        className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm min-h-[44px]"
+                        placeholder="e.g. Main Help Desk"
+                        value={formData.holding_location}
+                        onChange={e => setFormData({...formData, holding_location: e.target.value})}
                       />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-textMuted mb-1.5">Additional Details</label>
-                    <textarea 
-                      required
-                      className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm h-[130px] resize-none"
-                      placeholder="Any distinguishing features, colors, brands, or condition..."
-                      value={formData.description}
-                      onChange={e => setFormData({...formData, description: e.target.value})}
-                    ></textarea>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Photo (Max 5MB)</label>
+                      <div 
+                        className="border-2 border-dashed border-border rounded-xl h-[120px] flex flex-col items-center justify-center bg-background cursor-pointer hover:border-accent/50 transition-colors relative overflow-hidden tap-target-44"
+                        onClick={handleAttachPhoto}
+                      >
+                        {imagePreview ? (
+                          <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <>
+                            <Upload size={22} className="text-textMuted mb-1.5" />
+                            <span className="text-xs text-textMuted font-medium">{isNative ? 'Take Photo or Choose Gallery' : 'Click to upload image'}</span>
+                          </>
+                        )}
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          className="hidden" 
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={handleWebImageChange}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-textMuted mb-1">Additional Details</label>
+                      <textarea 
+                        required
+                        className="w-full bg-background border border-border rounded-xl py-2 px-3 text-white focus:outline-none focus:border-accent/50 text-sm h-[100px] resize-none"
+                        placeholder="Distinguishing features, colors, brands, or condition..."
+                        value={formData.description}
+                        onChange={e => setFormData({...formData, description: e.target.value})}
+                      ></textarea>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex justify-end gap-3 p-4 border-t border-border shrink-0 bg-background/50">
                 <button 
                   type="button" 
                   onClick={() => setIsLogModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-textMuted hover:text-white transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-textMuted hover:text-white transition-colors tap-target-44"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="bg-accent hover:bg-accent/90 disabled:opacity-50 text-white px-6 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2"
+                  className="bg-accent hover:bg-accent/90 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 tap-target-44 shadow-[0_0_15px_rgba(99,102,241,0.4)]"
                 >
                   {isSubmitting ? (
                     <><Loader2 size={16} className="animate-spin" /> Processing AI...</>
@@ -592,97 +726,116 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* View Details Modal */}
+      {/* View Details Modal - with internal 90dvh scrolling & reachable action */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-md shadow-2xl relative my-auto overflow-hidden">
-            <div className="absolute top-4 right-4 z-10">
-              <button onClick={() => setSelectedItem(null)} className="w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white/80 hover:text-white hover:bg-black/80 backdrop-blur-md transition-all">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-hidden animate-in fade-in">
+          <div className="bg-surface border border-border rounded-2xl w-full max-w-md shadow-2xl relative my-auto max-h-[90dvh] flex flex-col overflow-hidden">
+            <div className="absolute top-3 right-3 z-20">
+              <button 
+                onClick={() => setSelectedItem(null)} 
+                className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-white/80 hover:text-white backdrop-blur-md transition-all tap-target-44"
+              >
                 <X size={16} />
               </button>
             </div>
             
-            {selectedItem.image_path ? (
-              <div className="w-full h-48 bg-background relative">
-                <img src={getImageUrl(selectedItem.image_path)} alt={selectedItem.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
-              </div>
-            ) : (
-              <div className="w-full h-32 bg-background flex items-center justify-center border-b border-border">
-                <Package size={48} className="text-border" />
-              </div>
-            )}
-            
-            <div className="p-6">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-background border border-border text-textMuted uppercase tracking-wider">
-                      {selectedItem.category}
-                    </span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${selectedItem.status === 'claimed' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'} uppercase tracking-wider`}>
-                      {selectedItem.status}
-                    </span>
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto">
+              {selectedItem.image_path ? (
+                <div className="w-full h-44 bg-background relative shrink-0 flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={getImageUrl(selectedItem.image_path)} 
+                    alt={selectedItem.title} 
+                    className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.parentElement?.querySelector('.img-fallback');
+                      if (fallback) fallback.classList.remove('hidden');
+                    }}
+                  />
+                  <div className="img-fallback hidden w-full h-full flex items-center justify-center text-textMuted bg-background">
+                    <Package size={36} />
                   </div>
-                  <h2 className="text-xl font-bold text-white">{selectedItem.title}</h2>
+                  <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
                 </div>
-              </div>
+              ) : (
+                <div className="w-full h-28 bg-background flex items-center justify-center border-b border-border shrink-0">
+                  <Package size={36} className="text-textMuted/40" />
+                </div>
+              )}
               
-              <div className="space-y-4 mb-6 text-sm">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-background rounded-lg p-3 border border-border">
-                    <div className="text-textMuted text-xs mb-1">Found Location</div>
-                    <div className="text-white font-medium truncate" title={selectedItem.location_text}>{selectedItem.location_text}</div>
-                  </div>
-                  <div className="bg-background rounded-lg p-3 border border-border">
-                    <div className="text-textMuted text-xs mb-1">Holding Location</div>
-                    <div className="text-white font-medium truncate" title={selectedItem.holding_location || 'Not specified'}>{selectedItem.holding_location || 'Not specified'}</div>
+              <div className="p-5">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-background border border-border text-textMuted uppercase tracking-wider">
+                        {selectedItem.category}
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium ${selectedItem.status === 'claimed' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'} uppercase tracking-wider`}>
+                        {selectedItem.status}
+                      </span>
+                    </div>
+                    <h2 className="text-lg font-bold text-white">{selectedItem.title}</h2>
                   </div>
                 </div>
                 
-                <div>
-                  <div className="text-textMuted text-xs mb-1">Description</div>
-                  <p className="text-white leading-relaxed">{selectedItem.description}</p>
-                </div>
-                
-                {(selectedItem.brand || selectedItem.colors?.length > 0) && (
-                  <div className="flex gap-4 pt-2 border-t border-border">
-                    {selectedItem.brand && selectedItem.brand !== 'Unknown' && (
-                      <div>
-                        <div className="text-textMuted text-xs mb-0.5">Brand</div>
-                        <div className="text-white">{selectedItem.brand}</div>
-                      </div>
-                    )}
-                    {selectedItem.colors?.length > 0 && (
-                      <div>
-                        <div className="text-textMuted text-xs mb-0.5">Colors</div>
-                        <div className="flex gap-1">
-                          {selectedItem.colors.map((c: string, i: number) => (
-                            <span key={i} className="px-1.5 py-0.5 rounded bg-background border border-border text-xs capitalize text-white">{c}</span>
-                          ))}
+                <div className="space-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-background rounded-xl p-2.5 border border-border">
+                      <div className="text-textMuted text-[10px] mb-0.5">Found Location</div>
+                      <div className="text-white font-medium truncate" title={selectedItem.location_text}>{selectedItem.location_text || 'Unknown'}</div>
+                    </div>
+                    <div className="bg-background rounded-xl p-2.5 border border-border">
+                      <div className="text-textMuted text-[10px] mb-0.5">Holding Location</div>
+                      <div className="text-white font-medium truncate" title={selectedItem.holding_location || 'Main Storage'}>{selectedItem.holding_location || 'Main Storage'}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-background/50 rounded-xl p-3 border border-border">
+                    <div className="text-textMuted text-[10px] mb-1 font-semibold uppercase">Description</div>
+                    <p className="text-white leading-relaxed">{selectedItem.description}</p>
+                  </div>
+                  
+                  {(selectedItem.brand || selectedItem.colors?.length > 0) && (
+                    <div className="flex gap-4 pt-2 border-t border-border">
+                      {selectedItem.brand && selectedItem.brand !== 'Unknown' && (
+                        <div>
+                          <div className="text-textMuted text-[10px] mb-0.5">Brand</div>
+                          <div className="text-white font-medium">{selectedItem.brand}</div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                <div className="pt-2 border-t border-border flex items-center justify-between">
-                  <div className="text-xs text-textMuted">
-                    Logged on {new Date(selectedItem.found_at || selectedItem.created_at).toLocaleString()}
+                      )}
+                      {selectedItem.colors?.length > 0 && (
+                        <div>
+                          <div className="text-textMuted text-[10px] mb-0.5">Colors</div>
+                          <div className="flex gap-1 flex-wrap">
+                            {selectedItem.colors.map((c: string, i: number) => (
+                              <span key={i} className="px-1.5 py-0.5 rounded bg-background border border-border text-[10px] capitalize text-white">{c}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="text-[11px] text-textMuted/70 pt-2 border-t border-border">
+                    Logged: {new Date(selectedItem.found_at || selectedItem.created_at).toLocaleString()}
                   </div>
                 </div>
               </div>
-              
-              {selectedItem.status !== 'claimed' && (
+            </div>
+
+            {/* Modal Footer with Reachable Button */}
+            {selectedItem.status !== 'claimed' && (
+              <div className="p-4 border-t border-border bg-background/50 shrink-0">
                 <button 
                   onClick={() => markAsClaimed(selectedItem.id)}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(34,197,94,0.3)] tap-target-44"
                 >
-                  <Check size={18} />
+                  <Check size={16} />
                   Mark as Claimed
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

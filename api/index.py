@@ -91,6 +91,16 @@ async def chat_endpoint(
         except Exception:
             pass
         
+    from engine import analyze_user_intent
+    decision = analyze_user_intent(message, image_bytes)
+    
+    # If the user is just saying hi or chatting casually, respond conversationally WITHOUT recording a false lost item
+    if not decision.is_lost_item:
+        return {
+            "reply": {"role": "bot", "type": "text", "content": decision.ai_reply},
+            "matches": []
+        }
+        
     try:
         extracted, results = run_matching_engine(message, image_bytes)
     except Exception as e:

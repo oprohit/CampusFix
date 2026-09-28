@@ -102,7 +102,7 @@ export default function Landing() {
   }
 
   return (
-    <div className={`min-h-screen ${isDark ? 'dark bg-background text-textMain' : 'bg-gray-50 text-gray-900'} transition-colors duration-200 overflow-hidden relative`}>
+    <div className={`min-h-[100dvh] ${isDark ? 'dark bg-background text-textMain' : 'bg-gray-50 text-gray-900'} transition-colors duration-200 overflow-y-auto overflow-x-hidden relative`}>
       {/* Background Elements */}
       {isDark && (
         <>

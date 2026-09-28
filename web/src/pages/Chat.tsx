@@ -259,14 +259,14 @@ export default function Chat() {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mpqivpxswksjqkohhjje.supabase.co'
 
   return (
-    <div className="flex flex-col h-screen bg-background text-textMain dark overflow-hidden">
+    <div className="app-shell bg-background text-textMain dark">
       {/* Header with Safe Area Top */}
       <header 
-        className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/80 backdrop-blur-md shrink-0 z-20"
+        className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/90 backdrop-blur-md shrink-0 z-20"
         style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0.75rem)' }}
       >
         <div className="flex items-center gap-3">
-          <Link to="/" className="tap-target-44 flex items-center justify-center p-2 hover:bg-surface rounded-full transition-colors text-textMuted hover:text-white">
+          <Link to={isNative ? "/dashboard" : "/"} className="tap-target-44 flex items-center justify-center p-2 hover:bg-surface rounded-full transition-colors text-textMuted hover:text-white" title="Back">
             <X size={20} />
           </Link>
           <div className="relative">
@@ -303,8 +303,8 @@ export default function Chat() {
         </div>
       )}
 
-      {/* Chat Area with no pull-to-refresh glitch */}
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-6 chat-no-refresh overscroll-contain">
+      {/* Chat Area with single vertical scroll */}
+      <div className="main-scroll-area p-4 flex flex-col gap-6">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex flex-col max-w-[85%] sm:max-w-[70%] ${msg.role === 'user' ? 'self-end items-end' : 'self-start items-start'} animate-in slide-in-from-bottom-2 fade-in duration-300`}>
             
@@ -442,7 +442,7 @@ export default function Chat() {
       {/* Found Item Modal */}
       {isFoundModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl shadow-2xl relative my-auto animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-surface border border-border rounded-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col overflow-hidden shadow-2xl relative my-auto animate-in fade-in zoom-in-95 duration-200">
             {foundSuccess ? (
               <div className="p-10 flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4">
@@ -453,7 +453,7 @@ export default function Chat() {
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between p-5 border-b border-border">
+                <div className="flex items-center justify-between p-5 border-b border-border shrink-0">
                   <h2 className="text-lg font-bold text-white">Report Found Item</h2>
                   <button 
                     onClick={() => setIsFoundModalOpen(false)} 
@@ -462,10 +462,11 @@ export default function Chat() {
                     <X size={20} />
                   </button>
                 </div>
-                <form onSubmit={submitFoundItem} className="p-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-3">
-                      <div>
+                <form onSubmit={submitFoundItem} className="flex flex-col flex-1 overflow-hidden p-5">
+                  <div className="flex-1 overflow-y-auto pr-1">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-3">
+                        <div>
                         <label className="block text-xs font-medium text-textMuted mb-1">Item Title</label>
                         <input 
                           required
@@ -545,8 +546,9 @@ export default function Chat() {
                       </div>
                     </div>
                   </div>
+                </div>
                   
-                  <div className="flex justify-end gap-3 pt-3 border-t border-border">
+                <div className="flex justify-end gap-3 pt-3 border-t border-border shrink-0">
                     <button 
                       type="button" 
                       onClick={() => setIsFoundModalOpen(false)}

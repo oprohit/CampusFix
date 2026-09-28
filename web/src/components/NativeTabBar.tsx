@@ -45,7 +45,7 @@ export default function NativeTabBar() {
       {/* Alerts Modal */}
       {showAlerts && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-[#12122b] border border-white/10 w-full max-w-md rounded-2xl p-5 shadow-2xl text-white">
+          <div className="bg-[#12122b] border border-white/10 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl p-5 shadow-2xl text-white">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <Bell size={18} className="text-accent" />
@@ -77,7 +77,7 @@ export default function NativeTabBar() {
       {/* Profile Modal */}
       {showProfile && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-[#12122b] border border-white/10 w-full max-w-md rounded-2xl p-5 shadow-2xl text-white">
+          <div className="bg-[#12122b] border border-white/10 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl p-5 shadow-2xl text-white">
             <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <User size={18} className="text-accent" />

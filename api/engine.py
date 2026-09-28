@@ -44,6 +44,45 @@ class ExtractionResult(BaseModel):
     normalized_location: str
     estimated_time: str
 
+class ChatDecision(BaseModel):
+    intent: str
+    ai_reply: str
+    is_lost_item: bool
+    extracted: ExtractionResult | None = None
+
+def analyze_user_intent(text: str, image_bytes: bytes = None) -> ChatDecision:
+    """Classifies user intent (Greeting, Casual/Humor, Lost Item Report) and decides whether to file a report."""
+    import re
+    lower = text.strip().lower()
+    cleaned = re.sub(r'[^\w\s]', '', lower).strip()
+    
+    # 1. Greetings
+    greetings = {"hi", "hello", "hey", "hola", "sup", "yo", "good morning", "good afternoon", "good evening", "howdy", "heyy", "hiii"}
+    if cleaned in greetings:
+        return ChatDecision(
+            intent="GREETING",
+            ai_reply="Hi there! 👋 I'm LostMate AI. Did you lose something on campus, or are you looking to report an item you found? Tell me what you're looking for (e.g. 'I lost my blue iPhone near the library') and I'll search our database!",
+            is_lost_item=False
+        )
+        
+    # 2. Jokes / Non-physical items (e.g. "i lost my love")
+    casual_patterns = ["love", "boyfriend", "girlfriend", "mind", "sanity", "sleep", "grades", "gpa", "who are you", "what can you do", "help me"]
+    if any(p in lower for p in ["lost my love", "find any love", "my love", "lost my heart", "who are you", "what is this"]):
+        return ChatDecision(
+            intent="CASUAL",
+            ai_reply="Haha, I might not be able to find love or fix your GPA, but I'm an expert at recovering lost phones, laptops, keys, wallets, and student IDs on campus! 😄 Did you lose a physical item?",
+            is_lost_item=False
+        )
+
+    # 3. Real Lost Item Report
+    extracted = extract_details(text, image_bytes)
+    return ChatDecision(
+        intent="LOST_REPORT",
+        ai_reply="",
+        is_lost_item=True,
+        extracted=extracted
+    )
+
 def extract_details(text: str, image_bytes: bytes = None) -> ExtractionResult:
     """Extracts structured information from text (and optionally an image)."""
     if not ai_client:

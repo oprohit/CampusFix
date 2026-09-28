@@ -65,7 +65,7 @@ export default function Auth() {
 
   return (
     <div 
-      className="min-h-screen bg-background text-textMain dark flex flex-col relative overflow-hidden"
+      className="min-h-[100dvh] bg-background text-textMain dark flex flex-col relative overflow-y-auto overscroll-contain"
       style={{
         paddingTop: 'max(env(safe-area-inset-top, 0px), 1rem)',
         paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 1rem)'
